@@ -20,14 +20,35 @@ final class Php80
 {
     public static function fdiv($dividend, $divisor)
     {
-        if (\PHP_VERSION_ID < 70000) {
-            throw new \LogicException('fdiv() requires PHP 7.0 or higher');
-        }
-
         $dividend = self::floatArg($dividend, __FUNCTION__, 1);
         $divisor = self::floatArg($divisor, __FUNCTION__, 2);
 
-        return (float) @($dividend / $divisor);
+        if (\PHP_VERSION_ID >= 70000) {
+            return (float) @($dividend / $divisor);
+        }
+
+        if (is_nan($dividend) || is_nan($divisor)) {
+            return NAN;
+        }
+
+        if (($divisor === INF || $divisor === -INF) && $dividend !== 0.0) {
+            return NAN;
+        }
+
+        if (0.0 === $divisor) {
+            if ($dividend === 0.0) {
+                return NAN;
+            }
+
+            return ($dividend < 0 xor $divisor < 0 xor self::isNegativeZero($dividend) xor self::isNegativeZero($divisor)) ? -INF : INF;
+        }
+
+        return (float) $dividend / $divisor;
+    }
+
+    private static function isNegativeZero($value)
+    {
+        return ((string) $value) === '-0'; // @todo make it work on PHP5.x
     }
 
     private static function floatArg($value, $caller, $pos)

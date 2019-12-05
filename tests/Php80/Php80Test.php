@@ -19,7 +19,6 @@ use PHPUnit\Framework\TestCase;
 class Php80Test extends TestCase
 {
     /**
-     * @requires PHP 7.0
      * @covers \Symfony\Polyfill\Php80\Php80::fdiv
      * @dataProvider fdivProvider
      */
@@ -32,7 +31,6 @@ class Php80Test extends TestCase
     }
 
     /**
-     * @requires PHP 7.0
      * @covers \Symfony\Polyfill\Php80\Php80::fdiv
      * @dataProvider nanFdivProvider
      */
@@ -42,7 +40,6 @@ class Php80Test extends TestCase
     }
 
     /**
-     * @requires PHP 7.0
      * @covers \Symfony\Polyfill\Php80\Php80::fdiv
      * @dataProvider invalidFloatProvider
      */
@@ -50,16 +47,6 @@ class Php80Test extends TestCase
     {
         $this->setExpectedException('\TypeError');
         fdiv($divident, $divisor);
-    }
-
-    /**
-     * @requires PHP < 7.0
-     * @covers \Symfony\Polyfill\Php80\Php80::fdiv
-     */
-    public function testFdivUnsupportedPHPVersion()
-    {
-        $this->setExpectedException('\LogicException', 'fdiv() requires PHP 7.0 or higher');
-        fdiv(1, 1);
     }
 
     public function fdivProvider()
