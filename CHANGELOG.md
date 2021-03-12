@@ -1,3 +1,6 @@
+# 1.23.0
+ * added `MYSQLI_REFRESH_REPLICA` constant to PHP 8.1 polyfill
+
 # 1.22.1
 
   * always accept null values on PHP 8, as native functions do
