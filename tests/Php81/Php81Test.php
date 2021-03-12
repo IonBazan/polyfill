@@ -31,7 +31,7 @@ class Php81Test extends TestCase
     /**
      * @requires extension mysqli
      */
-    public function testMysliRefreshReplicaDefined()
+    public function testMysqliRefreshReplicaDefined()
     {
         $this->assertTrue(defined('MYSQLI_REFRESH_REPLICA'));
         $this->assertSame(MYSQLI_REFRESH_SLAVE, MYSQLI_REFRESH_REPLICA);
