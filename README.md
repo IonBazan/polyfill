@@ -65,6 +65,7 @@ Polyfills are provided for:
 - the `AllowDynamicProperties` attribute introduced in PHP 8.2;
 - the `SensitiveParameter` attribute introduced in PHP 8.2;
 - the `SensitiveParameterValue` class introduced in PHP 8.2;
+- the `ini_parse_quantity` function introduced in PHP 8.2;
 - the `json_validate` function introduced in PHP 8.3;
 
 It is strongly recommended to upgrade your PHP version and/or install the missing

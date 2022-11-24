@@ -12,3 +12,7 @@
 if (\PHP_VERSION_ID >= 80200) {
     return;
 }
+
+if (!function_exists('ini_parse_quantity')) {
+    function ini_parse_quantity(string $shorthand): int { return p\Php82::ini_parse_quantity($shorthand); }
+}
