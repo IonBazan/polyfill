@@ -37,13 +37,36 @@ final class Php82
             $shorthand = substr($shorthand, 1);
         }
 
+        $base = 10;
+        $digitRegex = '0-9';
+
+        if ($shorthand[0] === '0') {
+            switch (strtoupper($shorthand[1] ?? '')) {
+                case 'X':
+                    $base = 16;
+                    $digitRegex = '0-9A-Fa-f';
+                    $shorthand = substr($shorthand, 2);
+                    break;
+                case 'B':
+                    $base = 2;
+                    $digitRegex = '0-1';
+                    $shorthand = substr($shorthand, 2);
+                    break;
+                case 'O':
+                    $base = 8;
+                    $digitRegex = '0-7';
+                    $shorthand = substr($shorthand, 2);
+                    break;
+            }
+        }
+
         // If there is no suffix, return the integer value with the sign.
-        if (preg_match('/^\d+$/', $shorthand, $matches)) {
-            return $multiplier * $matches[0];
+        if (preg_match('/^['.$digitRegex.']+$/', $shorthand, $matches)) {
+            return self::parseInt($matches[0], $base) * $multiplier;
         }
 
         // Return 0 with a warning if there are no leading digits
-        if (preg_match('/^\d/', $shorthand) === 0) {
+        if (preg_match('/^['.$digitRegex.']/', $shorthand) === 0) {
             trigger_error(
                 sprintf(
                     'Invalid quantity "%s": no valid leading digits, interpreting as "0" for backwards compatibility',
@@ -70,7 +93,7 @@ final class Php82
                 $multiplier *= 1024 * 1024 * 1024;
                 break;
             default:
-                preg_match('/\d+/', $shorthand, $matches);
+                preg_match('/['.$digitRegex.']+/', $shorthand, $matches);
                 trigger_error(
                     sprintf(
                         'Invalid quantity "%s": unknown multiplier "%s", interpreting as "%d" for backwards compatibility',
@@ -81,10 +104,10 @@ final class Php82
                     E_USER_WARNING
                 );
 
-                return $matches[0] * $multiplier;
+                return self::parseInt($matches[0], $base) * $multiplier;
         }
 
-        $stripped_shorthand = preg_replace('/^(\d+)(\D.*)([kKmMgG])$/', '$1$3', $shorthand, -1, $count);
+        $stripped_shorthand = preg_replace('/^(['.$digitRegex.']+)([^'.$digitRegex.'].*)([kKmMgG])$/', '$1$3', $shorthand, -1, $count);
         if ($count > 0) {
             trigger_error(
                 sprintf(
@@ -96,7 +119,7 @@ final class Php82
             );
         }
 
-        preg_match('/\d+/', $shorthand, $matches);
+        preg_match('/['.$digitRegex.']+/', $shorthand, $matches);
 
         $multiplied = $matches[0] * $multiplier;
         if (is_float($multiplied)) {
@@ -109,6 +132,16 @@ final class Php82
             );
         }
 
-        return (int)($matches[0] * $multiplier);
+        return (int)(self::parseInt($matches[0], $base) * $multiplier);
+    }
+
+    private static function parseInt(string $value, int $base): int
+    {
+        switch ($base) {
+            case 2: return bindec($value);
+            case 8: return octdec($value);
+            case 16: return hexdec($value);
+            default: return (int)$value;
+        }
     }
 }
